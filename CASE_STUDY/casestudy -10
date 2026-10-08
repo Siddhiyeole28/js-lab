@@ -1,0 +1,178 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus Event Registration System</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: Arial, sans-serif;
+      color: #263445;
+      background: #eef5ff;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    button, input, select {
+      padding: 12px 14px;
+      font: inherit;
+      border: 1px solid #b8c5d5;
+      border-radius: 5px;
+    }
+
+    button {
+      color: white;
+      background: #2563eb;
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:hover { background: #1d4ed8; }
+
+    input { min-width: 240px; }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 4px 14px #1e293b18;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 850px;
+    }
+
+    th, td {
+      padding: 13px 10px;
+      text-align: center;
+      border-bottom: 1px solid #dbe3ed;
+    }
+
+    th {
+      color: white;
+      background: #303943;
+    }
+
+    .Registered { color: #16803c; font-weight: bold; }
+    .Pending { color: #a36b00; font-weight: bold; }
+    .Cancelled { color: #b42318; font-weight: bold; }
+
+    #message {
+      text-align: center;
+      color: #526174;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Campus Event Registration System</h1>
+
+    <div class="controls">
+      <button id="loadButton">Load Student Data</button>
+      <button id="queryButton">Load Using Query</button>
+      <input id="search" type="search" placeholder="Search by name or PRN">
+      <select id="statusFilter">
+        <option value="">All Statuses</option>
+        <option>Registered</option>
+        <option>Pending</option>
+        <option>Cancelled</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Sr. No.</th>
+            <th>Student Name</th>
+            <th>PRN</th>
+            <th>Department</th>
+            <th>Year</th>
+            <th>Event Name</th>
+            <th>Registration Status</th>
+          </tr>
+        </thead>
+        <tbody id="studentRows"></tbody>
+      </table>
+    </div>
+
+    <p id="message">Click “Load Student Data” to display registrations.</p>
+  </main>
+
+  <script>
+    const students = [
+      { name: "Aarav Sharma", prn: "2507052101", department: "Computer Science", year: "Second Year", event: "Hackathon 2026", status: "Registered" },
+      { name: "Sneha Patil", prn: "2507052102", department: "Information Technology", year: "Third Year", event: "Tech Fest 2026", status: "Pending" },
+      { name: "Rahul Verma", prn: "2507052103", department: "Computer Science", year: "Second Year", event: "Coding Competition", status: "Registered" },
+      { name: "Priya Deshmukh", prn: "2507052104", department: "Electronics", year: "Fourth Year", event: "Robotics Workshop", status: "Cancelled" },
+      { name: "Rohan Kulkarni", prn: "2507052105", department: "Mechanical", year: "Third Year", event: "Innovation Expo", status: "Registered" },
+      { name: "Ananya Joshi", prn: "2507052106", department: "Computer Science", year: "First Year", event: "AI Workshop", status: "Pending" }
+    ];
+
+    const rows = document.getElementById("studentRows");
+    const search = document.getElementById("search");
+    const statusFilter = document.getElementById("statusFilter");
+    const message = document.getElementById("message");
+
+    function renderStudents() {
+      const term = search.value.trim().toLowerCase();
+      const selectedStatus = statusFilter.value;
+
+      const filtered = students.filter(student => {
+        const matchesSearch =
+          student.name.toLowerCase().includes(term) ||
+          student.prn.toLowerCase().includes(term);
+
+        const matchesStatus =
+          !selectedStatus || student.status === selectedStatus;
+
+        return matchesSearch && matchesStatus;
+      });
+
+      rows.innerHTML = filtered.map((student, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${student.name}</td>
+          <td>${student.prn}</td>
+          <td>${student.department}</td>
+          <td>${student.year}</td>
+          <td>${student.event}</td>
+          <td class="${student.status}">${student.status}</td>
+        </tr>
+      `).join("");
+
+      message.textContent = filtered.length
+        ? `Showing ${filtered.length} registration(s).`
+        : "No matching registrations found.";
+    }
+
+    document.getElementById("loadButton").addEventListener("click", renderStudents);
+    document.getElementById("queryButton").addEventListener("click", renderStudents);
+    search.addEventListener("input", renderStudents);
+    statusFilter.addEventListener("change", renderStudents);
+  </script>
+</body>
+</html>
